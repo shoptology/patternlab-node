@@ -1,5 +1,5 @@
 /* 
- * patternlab-node - v0.1.2 - 2014-07-15 
+ * patternlab-node - v0.1.2 - 2014-07-16 
  * 
  * Brian Muenzenmeyer, and the web community.
  * Licensed under the MIT license. 
@@ -18,6 +18,16 @@ var patternlab_engine = function(grunt){
 	patternlab.package = grunt.file.readJSON('package.json');
 	patternlab.config = grunt.file.readJSON('config.json');
 
+
+    /**
+     *  Boilerplate specific code
+     */
+
+    var helpers = require('../../app/lib/helpers.js');
+    helpers.register(hbs);
+
+    /** End */
+
 	function getVersion() {
 		grunt.log.ok(patternlab.package.version);
 	}
@@ -26,7 +36,7 @@ var patternlab_engine = function(grunt){
 		grunt.log.subhead('Patternlab Node Help');
 		grunt.log.writeln('===============================');
 		grunt.log.writeln('Command Line Arguments');
-		grunt.log.writeln('patternlab:only_patterns');			
+		grunt.log.writeln('patternlab:only_patterns');
 		grunt.log.writeln(' > Compiles the patterns only, outputting to ./public/patterns');
 		grunt.log.writeln('patternlab:v');
 		grunt.log.writeln(' > Retrieve the version of patternlab-node you have installed');
@@ -55,7 +65,7 @@ var patternlab_engine = function(grunt){
 		patternlab.partials = {};
 
 		grunt.file.recurse('./source/_patterns', function(abspath, rootdir, subdir, filename){
-			//check if the pattern already exists.  
+			//check if the pattern already exists.
 			var patternName = filename.substring(0, filename.indexOf('.'));
 			var patternIndex = patternlab.patternIndex.indexOf(subdir + '-' +  patternName);
 			var currentPattern;
@@ -65,7 +75,7 @@ var patternlab_engine = function(grunt){
 			if(filename.charAt(0) === '_' || grunt.util._.str.include(filename, 'json')){
 				return;
 			}
-			
+
 
 			//make a new Pattern Object
 			var flatPatternName = subdir.replace(/\//g, '-') + '-' + patternName;
@@ -91,7 +101,7 @@ var patternlab_engine = function(grunt){
 			}else{ // Pass global patternlab data
 				currentPattern.patternPartial = renderPattern(currentPattern.template, patternlab.data, patternlab.partials);
 			}
-			
+
 			//write the compiled template to the public patterns directory
 			flatPatternPath = currentPattern.name + '/' + currentPattern.name + '.html';
 
@@ -116,7 +126,7 @@ var patternlab_engine = function(grunt){
 
 				//done
 			}
-			
+
 			//add to patternlab arrays so we can look these up later.  this could probably just be an object.
 			patternlab.patternIndex.push(currentPattern.name);
 			patternlab.patterns.push(currentPattern);
@@ -138,7 +148,7 @@ var patternlab_engine = function(grunt){
 
 		//build the patternlab website
 		var patternlabSiteTemplate = grunt.file.read('./source/_patternlab-files/index.hbs');
-		
+
 		//loop through all patterns.  deciding to do this separate from the recursion, even at a performance hit, to attempt to separate the tasks of styleguide creation versus site menu creation
 		for(var i = 0; i < patternlab.patterns.length; i++){
 			var pattern = patternlab.patterns[i];
@@ -177,9 +187,9 @@ var patternlab_engine = function(grunt){
 
 				//if it is flat - we should not add the pattern to patternPaths
 				if(flatPatternItem){
-					
+
 					bucket.patternItems.push(navSubItem);
-					
+
 					//add to patternPaths
 					patternlab.patternPaths[bucketName][pattern.patternName] = pattern.subdir + "/" + pattern.filename.substring(0, pattern.filename.indexOf('.'));
 
